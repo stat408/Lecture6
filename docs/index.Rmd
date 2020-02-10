@@ -1,0 +1,521 @@
+---
+title: "Week 6: Advanced R Graphics and ggplot2"
+output:
+  revealjs::revealjs_presentation:
+    theme: white
+    center: true
+    transition: none
+    incremental: true
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(knitr)
+library(readr)
+library(dplyr)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Advanced R Graphics
+
+## NCAA Basketball data
+We will use data from the NCAA basketball tournament from 2011 - 2016.
+```{r, message = F}
+hoops <- read_csv('http://www.math.montana.edu/ahoegh/teaching/stat408/datasets/TourneyDetailedResults.csv')
+hoops_2011 <- hoops %>% filter(Season >= 2011)
+hoops_2011
+```
+
+## Compute annual averages
+```{r}
+points <- hoops_2011 %>%  group_by(Season) %>% 
+  summarise(Win.Points = mean(Wscore), Lose.Points = mean(Lscore), 
+            Win.3Pt = mean(Wfgm3), Lose.3pt = mean(Lfgm3)) 
+head(points)
+```
+
+## Plot types: Points 
+```{r, echo = F}
+plot(points$Lose.Points~points$Season,ylim=c(0,max(points$Lose.Points)), ylab='Average Points Scored', xlab='Season', main='Average Points Scored by Losing Teams \n in NCAA Tournament',cex.lab=.8, cex.main = .8)
+```
+
+## Plot types: Points Code
+```{r, eval = F}
+plot(points$Lose.Points~points$Season,
+     ylim=c(0,max(points$Lose.Points)), 
+     ylab='Average Points Scored', xlab='Season', 
+     main='Average Points Scored by Losing Teams \n in NCAA Tournament',
+     cex.lab=.8, cex.main = .8)
+```
+
+## Plot types: Bars
+```{r, echo=F}
+plot(points$Lose.Points~points$Season,ylim=c(0,max(points$Lose.Points)),
+     ylab='Average Points Scored', xlab='Season', type='h',lwd=3,
+     main='Average Points Scored by Losing Teams \n in NCAA Tournament',cex.lab=.8, cex.main = .8)
+```
+
+## Plot types: Bars Code
+```{r, eval=F}
+plot(points$Lose.Points~points$Season,
+     ylim=c(0,max(points$Lose.Points)),
+     ylab='Average Points Scored', 
+     xlab='Season', type='h',lwd=3,
+     main='Average Points Scored by Losing Teams \n in NCAA Tournament',
+     cex.lab=.8, cex.main = .8)
+```
+
+## Plot Types: Lines
+```{r, echo=F}
+plot(points$Lose.Points~points$Season,
+     ylim=c(0,max(points$Lose.Points)),
+     ylab='Average Points Scored', xlab='Season', type='n',
+     main='Average Points Scored by Losing Teams \n in NCAA Tournament',cex.lab=.8, cex.main = .8)
+lines(points$Lose.Points~points$Season,col='red',lwd=1)
+lines(points$Win.Points~points$Season,col='blue',lwd=1,lty=2)
+```
+
+## Plot Types: Lines Code
+```{r, mysize=TRUE, size='\\tiny', eval=F}
+plot(points$Lose.Points~points$Season,
+     ylim=c(0,max(points$Lose.Points)),
+     ylab='Average Points Scored', xlab='Season', 
+     type='n',
+     main='Average Points Scored by Losing Teams \n in NCAA Tournament',
+     cex.lab=.8, cex.main = .8)
+lines(points$Lose.Points~points$Season,col='red',lwd=1)
+lines(points$Win.Points~points$Season,col='blue',lwd=1,lty=2)
+```
+
+## Lines and Legends
+```{r, echo=F}
+plot(points$Lose.Points~points$Season,ylim=c(0,max(points$Win.Points)),
+     ylab='Average Points Scored', xlab='Season', type='n',
+     main='Average Points Scored in NCAA Tournament',cex.lab=.8, cex.main = .8)
+lines(points$Lose.Points~points$Season,col='red',lwd=1)
+lines(points$Win.Points~points$Season,col='blue',lwd=1,lty=2)
+legend('bottomright',legend=c('Winning Team','Losing Team'),col=c('blue','red'),
+       lwd=c(1,1), lty=c(2,1), cex = .7)
+```
+
+## Lines and Legends: Code
+```{r, eval=F}
+plot(points$Lose.Points~points$Season,
+     ylim=c(0,max(points$Win.Points)),
+     ylab='Average Points Scored', xlab='Season', 
+     type='n',
+     main='Average Points Scored in NCAA Tournament',
+     cex.lab=.8, cex.main = .8)
+lines(points$Lose.Points~points$Season,col='red',lwd=1)
+lines(points$Win.Points~points$Season,col='blue',lwd=1,lty=2)
+legend('bottomright',legend=c('Winning Team','Losing Team'),
+       col=c('blue','red'),
+       lwd=c(1,1), lty=c(2,1), cex = .7)
+```
+
+## Points
+```{r, echo=F}
+plot(points$Lose.Points~points$Season,ylim=c(0,max(hoops_2011$Wscore)),
+     ylab='Average Points Scored', xlab='Season', type='l', lwd=1,col='red',
+     main='Average Points Scored in NCAA Tournament',cex.lab=.8, cex.main = .8)
+lines(points$Win.Points~points$Season,col='blue',lwd=1,lty=2)
+points(hoops_2011$Wscore~hoops_2011$Season,pch=16,col=rgb(0,0,.5,.1))
+legend('bottomright',legend=c('Average Winning Team','Average Losing Team', 'Individual Winning Team'),col=c('blue','red',rgb(0,0,.5)),
+       lwd=c(1,1,NA), lty=c(2,1,NA), pch=c(NA,NA,16), cex=.7)
+```
+
+## Points: Code
+```{r, eval=F}
+plot(points$Lose.Points~points$Season,
+     ylim=c(0,max(hoops_2011$Wscore)),
+     ylab='Average Points Scored', xlab='Season', 
+     type='l', lwd=1,col='red',
+     main='Average Points Scored in NCAA Tournament',
+     cex.lab=.8, cex.main = .8)
+lines(points$Win.Points~points$Season,col='blue',lwd=1,lty=2)
+points(hoops_2011$Wscore~hoops_2011$Season,pch=16,col=rgb(0,0,.5,.1))
+legend('bottomright',
+       legend=c('Average Winning Team','Average Losing Team', 'Individual Winning Team'),
+       col=c('blue','red',rgb(0,0,.5)),
+       lwd=c(1,1,NA), lty=c(2,1,NA), pch=c(NA,NA,16), cex=.7)
+```
+
+
+## Annotation
+```{r, echo=F}
+plot(points$Lose.Points~points$Season,
+          ylim=c(0,max(hoops_2011$Wscore)),
+     ylab='Average Points Scored', xlab='Season', type='l', lwd=1,col='red',
+     main='Average Points Scored in NCAA Tournament',cex.lab=.8, cex.main = .8)
+lines(points$Win.Points~points$Season,col='blue',lwd=1,lty=2)
+points(hoops_2011$Wscore~hoops_2011$Season,pch=16,col=rgb(0,0,.5,.1))
+text(2014.5,40,'Shot Clock Shortened', cex=.6)
+arrows(x0=2015, y0=42, x1=2016, y1=70,  length=0.1, lwd=2)
+legend('bottomright',legend=c('Average Winning Team','Average Losing Team', 'Individual Winning Team'),col=c('blue','red',rgb(0,0,.5)),
+       lwd=c(1,1,NA), lty=c(2,1,NA), pch=c(NA,NA,16), cex=.6)
+```
+
+## Annotation: Code
+```{r, mysize=TRUE, size='\\tiny', eval=F}
+plot(points$Lose.Points~points$Season,
+          ylim=c(0,max(hoops_2011$Wscore)),
+     ylab='Average Points Scored', xlab='Season', type='l', lwd=1,col='red',
+     main='Average Points Scored in NCAA Tournament',cex.lab=.8, cex.main = .8)
+lines(points$Win.Points~points$Season,col='blue',lwd=1,lty=2)
+points(hoops_2011$Wscore~hoops_2011$Season,pch=16,col=rgb(0,0,.5,.1))
+text(2014.5,40,'Shot Clock Shortened', cex=.6)
+arrows(x0=2015, y0=42, x1=2016, y1=70,  length=0.1, lwd=2)
+legend('bottomright',
+       legend=c('Average Winning Team','Average Losing Team', 'Individual Winning Team'),
+       col=c('blue','red',rgb(0,0,.5)),
+       lwd=c(1,1,NA), lty=c(2,1,NA), pch=c(NA,NA,16), cex=.6)
+```
+
+## Axes
+```{r, echo=F}
+plot(points$Lose.Points~points$Season,
+     ylim=c(0,max(hoops_2011$Wscore)), axes=F,
+     ylab='Average Points Scored', xlab='Season', type='b',pch=16, lwd=1,col='red',
+     main='Average Points Scored in NCAA Tournament', cex.main=.75, cex.lab=.75)
+lines(points$Win.Points~points$Season,col='blue',lwd=1,lty=2,type='b',pch=17)
+legend('bottomright',legend=c('Average Winning Team','Average Losing Team'),col=c('blue','red'),
+       lwd=1, lty=c(2,1),pch=c(17,16), cex=.7)
+```
+
+## Axes: Code
+```{r, mysize=TRUE, size='\\tiny', eval=F}
+plot(points$Lose.Points~points$Season,
+     ylim=c(0,max(hoops_2011$Wscore)), axes=F,
+     ylab='Average Points Scored', xlab='Season',
+     type='b',pch=16, lwd=1,col='red',
+     main='Average Points Scored in NCAA Tournament',
+     cex.main=.75, cex.lab=.75)
+lines(points$Win.Points~points$Season,col='blue',
+      lwd=1,lty=2,type='b',pch=17)
+legend('bottomright',
+       legend=c('Average Winning Team','Average Losing Team'),
+       col=c('blue','red'),
+       lwd=1, lty=c(2,1),pch=c(17,16), cex=.7)
+```
+
+## Axes
+```{r, echo=F}
+plot(points$Lose.Points~points$Season,
+     ylim=c(0,max(hoops_2011$Wscore)), axes=F,
+     ylab='Average Points Scored', xlab='Season',
+     type='b',pch=16, lwd=1,col='red',
+     main='Average Points Scored in NCAA Tournament',
+     cex.main=.75, cex.lab=.75)
+lines(points$Win.Points~points$Season,
+      col='blue',lwd=3,lty=2,type='b',pch=17)
+legend('bottomleft',
+       legend=c('Average Winning Team','Average Losing Team'),
+       col=c('blue','red'),
+       lwd=1, lty=c(2,1),pch=c(17,16), cex=.7)
+axis(4)
+axis(1, at = 2011:2016,
+     labels=c('10-11','11-12','12-13','13-14','14-15','15-16'))
+```
+
+## Axes
+```{r, eval=F}
+plot(points$Lose.Points~points$Season,
+     ylim=c(0,max(hoops_2011$Wscore)), axes=F,
+     ylab='Average Points Scored', xlab='Season',
+     type='b',pch=16, lwd=1,col='red',
+     main='Average Points Scored in NCAA Tournament',
+     cex.main=.75, cex.lab=.75)
+lines(points$Win.Points~points$Season,
+      col='blue',lwd=3,lty=2,type='b',pch=17)
+legend('bottomleft',
+       legend=c('Average Winning Team','Average Losing Team'),
+       col=c('blue','red'),
+       lwd=1, lty=c(2,1),pch=c(17,16), cex=.7)
+axis(4)
+axis(1, at = 2011:2016,
+     labels=c('10-11','11-12','12-13','13-14','14-15','15-16'))
+```
+
+## Axes Box
+```{r, echo=F}
+plot(points$Lose.Points~points$Season,
+     ylim=c(0,max(hoops_2011$Wscore)), axes=F,
+     ylab='Average Points Scored', xlab='Season',
+     type='b',pch=16, lwd=1,col='red',
+     main='Average Points Scored in NCAA Tournament',
+     cex.main=.75, cex.lab=.75)
+lines(points$Win.Points~points$Season,
+      col='blue',lwd=3,lty=2,type='b',pch=17)
+legend('bottomleft',
+       legend=c('Average Winning Team','Average Losing Team'),
+       col=c('blue','red'),
+       lwd=1, lty=c(2,1),pch=c(17,16), cex=.7)
+axis(4)
+axis(1, at = 2011:2016,
+     labels=c('10-11','11-12','12-13','13-14','14-15','15-16'))
+box()
+```
+
+## Axes Box: Code
+```{r, eval=F}
+plot(points$Lose.Points~points$Season,
+     ylim=c(0,max(hoops_2011$Wscore)), axes=F,
+     ylab='Average Points Scored', xlab='Season',
+     type='b',pch=16, lwd=1,col='red',
+     main='Average Points Scored in NCAA Tournament',
+     cex.main=.75, cex.lab=.75)
+lines(points$Win.Points~points$Season,
+      col='blue',lwd=3,lty=2,type='b',pch=17)
+legend('bottomleft',
+       legend=c('Average Winning Team','Average Losing Team'),
+       col=c('blue','red'),
+       lwd=1, lty=c(2,1),pch=c(17,16), cex=.7)
+axis(4)
+axis(1, at = 2011:2016,
+     labels=c('10-11','11-12','12-13','13-14','14-15','15-16'))
+box()
+```
+
+## Exercise: Advanced Plotting
+Use the Seattle Housing Data Set [http://math.montana.edu/ahoegh/teaching/stat408/datasets/SeattleHousing.csv](http://math.montana.edu/ahoegh/teaching/stat408/datasets/SeattleHousing.csv) to create an interesting graphic, include informative titles, labels, and add an annotation.
+
+```{r}
+seattle_in <- read_csv('http://math.montana.edu/ahoegh/teaching/stat408/datasets/SeattleHousing.csv')
+```
+
+## Solution: Advanced Plotting
+```{r, echo=F,fig.align='center'}
+hist(seattle_in$price,prob=T,breaks="FD", ylab='', col='forestgreen',xlab='Sales Price (million $)', main='Houses Sold in Seattle',
+     axes=F)
+axis(1, at = c(0,500000,1000000,2500000,4000000,5500000,7000000), labels =c('0','.5','1','2.5','4','5.5','7'))
+
+arrows(x0=2500000, y0=1.5e-6, x1=1500000, y1=.5e-6,  length=0.1, lwd=2)
+text(2500000,1.8e-6,'Most homes sell for \n less than one million',cex=.8)
+```
+
+## Solution: Advanced Plotting Code
+```{r, eval=F,mysize=TRUE, size='\\tiny'}
+hist(seattle_in$price,prob=T,breaks="FD", ylab='',
+     col='forestgreen',
+     xlab='Sales Price (million $)', 
+     main='Houses Sold in Seattle', axes=F)
+axis(1, at = c(0,500000,1000000,2500000,4000000,5500000,
+               7000000), 
+     labels =c('0','.5','1','2.5','4','5.5','7'))
+
+arrows(x0=2500000, y0=1.5e-6, x1=1500000, y1=.5e-6, 
+       length=0.1, lwd=2)
+text(2500000,1.8e-6,
+     'Most homes sell for \n less than one million',cex=.8)
+```
+
+## Superimposed Plots
+```{r, echo=F}
+plot(density(hoops_2011$Wscore),xlab='points',ylab='', main='histogram and superimposed density curve \n for points scored by winning team',lwd=3, cex.main=.8, cex.lab=.8)
+hist(hoops_2011$Wscore,add=T,probability = T)
+```
+
+## Superimposed Plots: Code
+```{r, eval = F}
+plot(density(hoops_2011$Wscore),xlab='points',ylab='',
+     main='histogram and superimposed density curve \n for points scored by winning team',
+     lwd=3, cex.main=.8, cex.lab=.8)
+hist(hoops_2011$Wscore,add=T,probability = T)
+```
+
+## Expression / Text
+
+```{r, echo=T}
+plot(density(hoops_2011$Wscore),
+     ylab=expression(beta[2]),xlab='',
+     main='Examples with Expression',axes=F, type='n')
+box()
+text(70,.023, expression(sum(theta[i]^2, i=1, n)),cex=2)
+```
+
+
+
+# ggplot2
+
+## ggplot2 Overview
+Why ggplot2?
+
+### Advantages of ggplot2
+
+- consistent underlying grammar of graphics (Wilkinson, 2005)
+- plot specification at a high level of abstraction
+- very flexible
+- theme system for polishing plot appearance
+
+## Grammar of Graphics
+The basic idea: independently specify plot building blocks and combine them to create just about any kind of graphical display you want.
+
+Building blocks of a graph include:
+
+- data
+- aesthetic mapping
+- geometric object
+- statistical transformations
+- faceting
+
+## ggplot2 VS Base Graphics
+
+Compared to base graphics, ggplot2
+
+- is more verbose for simple / canned graphics
+- is less verbose for complex / custom graphics
+- does not have methods (data should always be in a data.frame)
+- uses a different system for adding plot elements
+
+## Aesthetic Mapping
+
+Aesthetics are things that you can see. Examples include:
+
+>- position (i.e., on the x and y axes)
+>- color ("outside" color)
+>- fill ("inside" color)
+>- shape (of points)
+>- linetype
+>- size
+
+Aesthetic mappings are set with the aes() function.
+
+## Geometric Objects (geom)
+
+Geometric objects are the actual marks we put on a plot. Examples include:
+
+>- points (`geom_point`)
+>- lines (`geom_line`)
+>- boxplot (`geom_boxplot`)
+
+A plot must have at least one geom; there is no upper limit. You can add a geom to a plot using the `+` operator
+
+## Graphical Primitives/ ggplot
+```{r, fig.align='center', fig.height=2.75}
+graph.a <- ggplot(data = hoops_2011, aes(Lfgm,Wfgm))
+graph.a
+```
+
+## Adding Geoms: `geom_point()`
+```{r, fig.align='center', fig.height=2.75}
+graph.a + geom_point()
+```
+
+## Adding Geoms: `geom_smooth()`
+```{r, fig.align='center', fig.height=2.75}
+graph.a + geom_point() + geom_smooth(method = 'loess')
+```
+
+## Adding Geoms: `geom_rug()`
+```{r, fig.align='center', fig.height=2.75}
+graph.a + geom_point() + geom_smooth(method = 'loess') + geom_rug()
+```
+
+## Adding Geoms: `geom_density2d()`
+```{r, fig.align='center', fig.height=2.75}
+graph.a + geom_point() + geom_smooth(method = 'loess') +
+  geom_rug() + geom_density2d()
+```
+
+## Adding Geoms: `geom_jitter()`
+```{r, fig.align='center', fig.height=2.75}
+graph.a + geom_rug() + geom_density2d() + geom_jitter()
+```
+
+## Adding Geoms: `labs()`
+```{r, fig.align='center', fig.height=2.65}
+graph.a  + geom_rug() + geom_density2d() +
+ geom_jitter() + 
+  labs(x='Losing Team Field Goals Made', 
+       y = 'Winning Team Field Goals Made')
+```
+
+## Scales: `xlim()` and `ylim()`
+```{r, mysize=TRUE, fig.align='center',warning=FALSE, fig.height=2.6}
+graph.a + geom_rug() + geom_density2d() +
+ geom_jitter() + 
+  labs(x='Losing Team Field Goals Made', 
+       y = 'Winning Team Field Goals Made') +
+  xlim(c(0,max(hoops_2011$Wfgm))) + ylim(c(0,max(hoops_2011$Wfgm)))
+```
+
+## Themes
+There are a wide range of themes available in ggplot: [theme overview](https://ggplot2.tidyverse.org/reference/ggtheme.html)
+```{r,fig.align='center', fig.height=2.75, echo = F}
+graph.a + geom_point() + theme_light() + labs(x='Losing Team Field Goals Made', y = 'Winning Team Field Goals Made')
+```
+
+## More about aes
+```{r, fig.align='center', fig.height=2.75}
+graph.a + geom_jitter(col = 'firebrick4')
+```
+
+## More about aes
+```{r, fig.align='center', fig.height=2.75}
+graph.a + geom_jitter(aes(col = as.factor(Season)))
+```
+
+
+## More about aes
+```{r, fig.align='center', fig.height=2.75}
+graph.a + geom_jitter(aes(col = as.factor(Season)), size=3,alpha=.4)
+```
+
+## More about aes
+```{r, echo = F, mysize=TRUE,fig.align='center'}
+graph.a + geom_jitter(aes(shape = as.factor(Season),col=Wscore), size=3,alpha=.4)
+```
+
+## More about aes: Comment
+```{r, eval = F, mysize=TRUE,fig.align='center'}
+graph.a + 
+  geom_jitter(aes(shape = as.factor(Season),col=Wscore),
+              size=3,alpha=.4)
+```
+
+## Faceting
+```{r, echo = F}
+graph.a + geom_point() + facet_wrap(~Season)
+```
+
+## Faceting: Comment
+```{r, eval = F}
+graph.a + geom_point() + facet_wrap(~Season)
+```
+
+## Faceting
+```{r, mysize=TRUE, eval=T, size='\\tiny',fig.align='center', fig.height=2.75}
+graph.a + facet_wrap(~Season) + geom_jitter(alpha=.5, aes(color=Wfgm3))
+```
+
+## Exercise: ggplot2
+
+Now use `ggplot2` to create an interesting graph using the Seattle Housing data set.
+
+## Solution: ggplot2
+```{r,fig.align='center',echo=F}
+seattle_in$zipcode <- as.factor(seattle_in$zipcode)
+graph.a <- ggplot(data = seattle_in, aes(sqft_living,price))
+graph.a + geom_jitter(aes(col = zipcode))+ theme(plot.title = element_text(size=8), text = element_text(size=6)) + geom_smooth(method='loess')+ggtitle('Seattle Housing Sales: Price vs. Square Footage Living Space') + ylab('Sales Price (million dollars)') + xlab('Living Space (square foot)')+scale_y_continuous(breaks=c(seq(0,7000000,by=1000000)), labels=as.character(0:7)) +  annotate('text',3500,6000000, label = 'Housing price depends on zipcode', size=2) +annotate("rect", xmin = 0, xmax = 7250, ymin = 5500000, ymax = 6500000, alpha = .6) + geom_segment(aes(x=3500, xend=3500, y=5500000, yend=3000000),
+                           arrow = arrow(length = unit(0.5, "cm")))
+```
+
+## Solution: ggplot2
+```{r, eval = F}
+seattle_in$zipcode <- as.factor(seattle_in$zipcode)
+graph.a <- ggplot(data = seattle_in, aes(sqft_living,price))
+graph.a + geom_jitter(aes(col = zipcode))+ 
+  theme(plot.title = element_text(size=8), 
+        text = element_text(size=6)) + geom_smooth(method='loess')+
+  ggtitle('Seattle Housing Sales: Price vs. Square Footage Living Space') + 
+  ylab('Sales Price (million dollars)') + 
+  xlab('Living Space (square foot)')+
+  scale_y_continuous(breaks=c(seq(0,7000000,by=1000000)),
+                     labels=as.character(0:7)) +  
+  annotate('text',3500,6000000, 
+           label = 'Housing price depends on zipcode', size=2) +
+  annotate("rect", xmin = 0, xmax = 7250, ymin = 5500000, ymax = 6500000, alpha = .6) + 
+  geom_segment(aes(x=3500, xend=3500, y=5500000, yend=3000000),
+                           arrow = arrow(length = unit(0.5, "cm")))
+```
