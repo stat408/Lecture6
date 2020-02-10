@@ -1,0 +1,35 @@
+---
+title: "Week 6: Advanced R Graphics and ggplot2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(knitr)
+library(readr)
+library(dplyr)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Exercise: Advanced Plotting
+Use the Seattle Housing Data Set [http://math.montana.edu/ahoegh/teaching/stat408/datasets/SeattleHousing.csv](http://math.montana.edu/ahoegh/teaching/stat408/datasets/SeattleHousing.csv) to create an interesting graphic, include informative titles, labels, and add an annotation.
+
+```{r}
+seattle_in <- read_csv('http://math.montana.edu/ahoegh/teaching/stat408/datasets/SeattleHousing.csv')
+```
+
+## Exercise: ggplot2
+
+Now use `ggplot2` to create an interesting graph using the Seattle Housing data set.
+
+
+## Map Solution
+
+```{r, echo = F}
+library(leaflet)
+seattle_sort <- seattle_in %>% arrange(price)
+m <- leaflet() %>% setView(lng = -122.3, lat = 47.6, zoom = 9)
+m  %>% addTiles() %>% addMarkers(lng=seattle_sort$long[c(1, nrow(seattle_sort))], lat=seattle_sort$lat[c(1,nrow(seattle_sort))], popup=c("Cheapest House: 80K ", "Most Expensive House: 7.7 million"))
+```
