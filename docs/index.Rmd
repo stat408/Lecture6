@@ -45,7 +45,7 @@ kable(head(baltimore.tow, 8))
 
 - Dealing with strings
 - Dealing with date/time objects
-- Wide and thin datasets
+- Dealing with factors
 
 # Goal 1. Average Towing Cost by Month
 
