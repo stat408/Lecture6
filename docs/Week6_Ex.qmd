@@ -1,0 +1,183 @@
+---
+title: "Polished Graphics"
+format: html
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+#### Graphics that Stand Alone
+
+__From now on, all graphics must "stand alone".__ This means informative titles, axes, labels, captions, annotations - when appropriate,  etc...
+
+#### Bar Charts with Count Data / Statistical Transformation
+
+```{r read_seattle, message = F}
+seattle <- read_csv('http://math.montana.edu/ahoegh/teaching/stat408/datasets/SeattleHousing.csv') |>
+  mutate(zipcode = factor(zipcode))
+```
+
+In @fig-bar1 we see a bar chart made without using tally to count up the number of houses sold in each zipcode
+
+```{r bar_plot1, fig.cap = "Standard Bar Chart without tally()"}
+#| label: fig-bar1
+seattle |>
+  ggplot(aes(x = zipcode, fill = zipcode)) +
+  geom_bar() + 
+  labs(title = 'Figure 1. First Bar Plot: # of houses sold in King County, WA zipcodes') +
+  ylab("number of houses") +
+  theme_minimal() +
+  theme(legend.position = 'none') 
+  
+```
+
+#### Activity #1
+
+Recreate this figure using `seattle_tallied` and use `library(patchwork)` to combine the images into a single figure.
+
+```{r}
+library(patchwork)
+seattle_tallied <- seattle |>
+  group_by(zipcode) |>
+  tally()
+```
+
+
+#### Activity #2
+
+Now expand on @fig-bar1 and also include waterfront in this figure. 
+---
+
+#### On bar charts
+
+- Bar charts are good for summarizing counts (better than tables)
+
+- Bar charts are bad at showing variability in the data...
+
+```{r}
+#| label: fig-compare
+#| fig-cap: "Boxplot shows much more information, with less ink"
+#| fig-height: 8
+
+bar1 <- seattle |>
+  group_by(zipcode) |>
+  summarise(price = mean(price)) |>
+  ggplot(aes(x = zipcode, y = price, fill = zipcode)) +
+  geom_bar(stat = 'identity') + 
+  labs(title = 'Figure 5. Bad Bar Chart \n # of houses sold in King County, WA zipcodes') +
+  ylab("Average Sales Price") +
+  theme_minimal() +
+  theme(legend.position = 'none') 
+
+box1 <- seattle |>
+  ggplot(aes(x = zipcode, y = price, fill = zipcode)) +
+  geom_boxplot() + 
+  labs(title = 'Figure 5. Better Box Plot \n # of houses sold in King County, WA zipcodes') +
+  ylab("Average Sales Price") +
+  theme_minimal() +
+  theme(legend.position = 'none') 
+
+
+bar1 / box1
+```
+
+
+#### Activity #3
+
+Update @fig-compare so that the y label is easy to interpret (in dollars).
+
+#### Activity #4
+
+Make the y-axes on both plots the same.
+
+Update @fig-compare so that the y label is easy to interpret (in dollars).
+
+
+
+## Accessibility (color blindness)
+
+Code from [https://github.com/clauswilke/colorblindr](https://github.com/clauswilke/colorblindr)
+
+
+```{r}
+fig <- ggplot(iris, aes(Sepal.Length, fill = Species)) + geom_density(alpha = 0.7)
+fig
+```
+
+```{r}
+library(remotes)
+#remotes::install_github("clauswilke/colorblindr")
+library(colorblindr)
+cvd_grid(fig)
+
+```
+#### Activity #5
+
+Improve this plot of price vs sqft_living (with bedrooms). Add titles, labels, and use a colorblind friendly way to highlight the number of bedrooms in a house. Also explore different themes.
+
+```{r}
+library(viridis)
+seattle |>
+  ggplot(aes(y = price, x= sqft_living, color = bedrooms)) +
+  geom_point()
+```
+
+### Additional Color Palletes
+
+```{r }
+#| fig-height: 10
+a <- seattle |>
+  ggplot(aes(x = zipcode, fill = zipcode)) +
+  geom_bar() + 
+  labs(title = 'Figure X. More Color Palletes') +
+  ylab("number of houses") +
+  theme_minimal() +
+  theme(legend.position = 'none',
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_fill_viridis(discrete = T) 
+
+
+b <- seattle |>
+  ggplot(aes(x = zipcode, fill = zipcode)) +
+  geom_bar() + 
+  labs(title = 'Figure X. More Color Palletes') +
+  ylab("number of houses") +
+  theme_minimal() +
+  theme(legend.position = 'none',
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_fill_viridis(discrete = TRUE, option = 'B')
+  
+c <- seattle |>
+  ggplot(aes(x = zipcode, fill = zipcode)) +
+  geom_bar() + 
+  labs(title = 'Figure X. More Color Palletes') +
+  ylab("number of houses") +
+  theme_minimal() +
+  theme(legend.position = 'none',
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_fill_viridis(discrete = TRUE, option = 'C')
+
+d <- seattle |>
+  ggplot(aes(x = zipcode, fill = zipcode)) +
+  geom_bar() + 
+  labs(title = 'Figure X. More Color Palletes') +
+  ylab("number of houses") +
+  theme_minimal() +
+  theme(legend.position = 'none',
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_fill_viridis(discrete = TRUE, option = 'D')
+
+e <- seattle |>
+  ggplot(aes(x = zipcode, fill = zipcode)) +
+  geom_bar() + 
+  labs(title = 'Figure X. More Color Palletes') +
+  ylab("number of houses") +
+  theme_minimal() +
+  theme(legend.position = 'none',
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_fill_viridis(discrete = TRUE, option = 'E')
+
+
+(a + b) / (c + d) / e
+```
